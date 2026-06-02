@@ -233,6 +233,48 @@ class BookCollection:
         """
         return [b for b in self.books if not b.read]
 
+    def find_by_year(self, year: int) -> List[Book]:
+        """Return all books published in the given year.
+
+        Parameters
+        ----------
+        year : int
+            The exact publication year to search for.
+
+        Returns
+        -------
+        List[Book]
+            A list of :class:`Book` instances whose ``year`` field equals
+            *year*. Returns an empty list if no matches are found.
+        """
+        return [b for b in self.books if b.year == year]
+
+    def find_by_year_range(self, start: int, end: int) -> List[Book]:
+        """Return all books published within an inclusive year range.
+
+        Parameters
+        ----------
+        start : int
+            The earliest publication year (inclusive).
+        end : int
+            The latest publication year (inclusive).
+
+        Returns
+        -------
+        List[Book]
+            A list of :class:`Book` instances whose ``year`` falls between
+            *start* and *end* (both inclusive). Returns an empty list if no
+            matches are found.
+
+        Raises
+        ------
+        ValueError
+            If *start* is greater than *end*.
+        """
+        if start > end:
+            raise ValueError(f"Start year ({start}) cannot be greater than end year ({end}).")
+        return [b for b in self.books if start <= b.year <= end]
+
     def find_by_author(self, author: str) -> List[Book]:
         """Return all books whose author name contains the search string.
 

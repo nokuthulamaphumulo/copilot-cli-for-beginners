@@ -437,6 +437,76 @@ class TestGetUnreadBooks:
 #       They will fail until validation is added to add_book().
 # ---------------------------------------------------------------------------
 
+class TestFindByYear:
+    """Tests for BookCollection.find_by_year and find_by_year_range."""
+
+    # --- find_by_year ---
+
+    def test_exact_year_returns_matching_books(self, populated_collection):
+        results = populated_collection.find_by_year(1965)
+        assert len(results) == 1
+        assert results[0].title == "Dune"
+
+    def test_exact_year_no_match_returns_empty(self, populated_collection):
+        assert populated_collection.find_by_year(2000) == []
+
+    def test_exact_year_empty_collection(self, collection):
+        assert collection.find_by_year(1965) == []
+
+    def test_exact_year_multiple_books_same_year(self, collection):
+        collection.add_book("Book A", "Author One", 1965)
+        collection.add_book("Book B", "Author Two", 1965)
+        collection.add_book("Book C", "Author Three", 1999)
+        results = collection.find_by_year(1965)
+        assert len(results) == 2
+
+    def test_year_zero_sentinel_is_searchable(self, collection):
+        collection.add_book("Unknown Year Book", "Some Author", 0)
+        results = collection.find_by_year(0)
+        assert len(results) == 1
+        assert results[0].title == "Unknown Year Book"
+
+    # --- find_by_year_range ---
+
+    def test_range_returns_books_in_range(self, populated_collection):
+        # 1937 (Hobbit), 1949 (1984), 1965 (Dune)
+        results = populated_collection.find_by_year_range(1940, 1970)
+        titles = {b.title for b in results}
+        assert titles == {"1984", "Dune"}
+
+    def test_range_inclusive_lower_boundary(self, populated_collection):
+        results = populated_collection.find_by_year_range(1937, 1940)
+        titles = {b.title for b in results}
+        assert "The Hobbit" in titles
+
+    def test_range_inclusive_upper_boundary(self, populated_collection):
+        results = populated_collection.find_by_year_range(1960, 1965)
+        titles = {b.title for b in results}
+        assert "Dune" in titles
+
+    def test_range_single_year_equals_exact(self, populated_collection):
+        assert populated_collection.find_by_year_range(1965, 1965) == \
+               populated_collection.find_by_year(1965)
+
+    def test_range_no_match_returns_empty(self, populated_collection):
+        assert populated_collection.find_by_year_range(2000, 2024) == []
+
+    def test_range_empty_collection_returns_empty(self, collection):
+        assert collection.find_by_year_range(1900, 2000) == []
+
+    def test_range_invalid_raises_value_error(self, collection):
+        with pytest.raises(ValueError):
+            collection.find_by_year_range(2000, 1900)
+
+    def test_range_all_books(self, populated_collection):
+        results = populated_collection.find_by_year_range(1900, 2000)
+        assert len(results) == 3
+
+
+# NOTE: These tests define the *expected* behaviour for year validation.
+#       They will fail until validation is added to add_book().
+# ---------------------------------------------------------------------------
+
 class TestYearValidation:
     """Tests for year validation in BookCollection.add_book.
 
