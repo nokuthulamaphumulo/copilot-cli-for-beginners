@@ -234,18 +234,23 @@ class BookCollection:
         return [b for b in self.books if not b.read]
 
     def find_by_author(self, author: str) -> List[Book]:
-        """Return all books by a given author using a case-insensitive match.
+        """Return all books whose author name contains the search string.
+
+        Performs a case-insensitive substring match so partial names such as
+        ``"Herbert"`` will match ``"Frank Herbert"``.
 
         Parameters
         ----------
         author : str
-            The author name to search for.
+            The author name or partial name to search for.
 
         Returns
         -------
         List[Book]
-            A list of :class:`Book` instances whose ``author`` field matches
+            A list of :class:`Book` instances whose ``author`` field contains
             *author* (ignoring case). Returns an empty list if no matches
-            are found.
+            are found or if *author* is empty.
         """
-        return [b for b in self.books if b.author.lower() == author.lower()]
+        if not author or not author.strip():
+            return []
+        return [b for b in self.books if author.lower() in b.author.lower()]

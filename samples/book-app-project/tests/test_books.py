@@ -204,6 +204,43 @@ class TestFindByAuthor:
         assert "1984" not in titles
         assert "The Hobbit" not in titles
 
+    # --- Partial match tests (fix for issue #1) ---
+
+    def test_partial_last_name_matches(self, populated_collection):
+        results = populated_collection.find_by_author("Herbert")
+        assert len(results) == 1
+        assert results[0].title == "Dune"
+
+    def test_partial_first_name_matches(self, populated_collection):
+        results = populated_collection.find_by_author("Frank")
+        assert len(results) == 1
+        assert results[0].title == "Dune"
+
+    def test_partial_name_case_insensitive(self, populated_collection):
+        results = populated_collection.find_by_author("ORWELL")
+        assert len(results) == 1
+        assert results[0].title == "1984"
+
+    def test_partial_name_matches_multiple_authors(self, collection):
+        collection.add_book("Dune", "Frank Herbert", 1965)
+        collection.add_book("Foundation", "Isaac Asimov", 1951)
+        collection.add_book("Childhood's End", "Arthur C. Clarke", 1953)
+        # "a" appears in all three authors — sanity check on broad partial
+        results = collection.find_by_author("a")
+        assert len(results) == 3
+
+    def test_empty_string_returns_empty_list(self, populated_collection):
+        assert populated_collection.find_by_author("") == []
+
+    def test_whitespace_only_returns_empty_list(self, populated_collection):
+        assert populated_collection.find_by_author("   ") == []
+
+    @pytest.mark.parametrize("query", ["Herbert", "frank", "FRANK HERBERT", "rank Her"])
+    def test_various_partial_queries_find_dune(self, populated_collection, query):
+        results = populated_collection.find_by_author(query)
+        titles = [b.title for b in results]
+        assert "Dune" in titles
+
 
 # ---------------------------------------------------------------------------
 # TestMarkAsRead
