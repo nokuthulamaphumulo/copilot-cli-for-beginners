@@ -1,25 +1,30 @@
 ---
 name: pytest-gen
-description: Generate comprehensive pytest tests - use when generating tests, creating test suites, or testing Python code
+description: Generate comprehensive pytest tests with fixtures and edge cases
 ---
 
-# Pytest Generation Skill
+# pytest Test Generation
 
-When generating tests, follow this structure.
+Generate pytest tests that include:
 
-## Test Organization
-
-- Group tests by function under test
-- Use `@pytest.mark.parametrize` for multiple inputs
-- Use fixtures for shared setup
+## Test Structure
+- Use pytest conventions (`test_` prefix)
+- One assertion per test when possible
+- Clear test names describing expected behavior
+- Group tests by function under test using classes
 - Follow arrange/act/assert pattern
 
-## Coverage Requirements
+## Coverage
+- Happy path scenarios
+- Edge cases: `None`, empty strings, empty lists
+- Boundary values
+- Error scenarios with `pytest.raises()`
+- Use `@pytest.mark.parametrize` for multiple inputs
 
-- Happy path (expected usage)
-- Edge cases (empty strings, None, boundary values)
-- Error cases (invalid input, file not found, wrong types)
-- Integration (functions working together)
+## Fixtures
+- Use `@pytest.fixture` for reusable test data
+- Use `tmp_path` for file operations
+- Mock external dependencies with `pytest-mock`
 
 ## Template
 
@@ -53,3 +58,6 @@ class TestFunctionName:
     def test_various_inputs(self, input_val, expected):
         assert function_to_test(input_val) == expected
 ```
+
+## Output
+Provide a complete, runnable test file with proper imports.
