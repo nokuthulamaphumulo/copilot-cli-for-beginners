@@ -9,7 +9,12 @@ It can add, remove, and list books. Also mark them as read.
 
 ## Current Features
 
-* Reads books from a JSON file (our database)
+* Reads and writes books from a JSON file (`data.json`)
+* Add, remove, and list books
+* Mark books as read/unread
+* Find books by author name (partial match supported)
+* Search books by exact year or year range (e.g. `1940-1960`)
+* Show only unread books
 * Input checking is weak in some areas
 * Some tests exist but probably not enough
 
@@ -28,11 +33,13 @@ It can add, remove, and list books. Also mark them as read.
 ## Running the App
 
 ```bash
-python book_app.py list
-python book_app.py add
-python book_app.py find
-python book_app.py remove
-python book_app.py help
+python book_app.py list     # Show all books
+python book_app.py unread   # Show only unread books
+python book_app.py year     # Search by year or year range (e.g. 1965 or 1940-1960)
+python book_app.py add      # Add a new book
+python book_app.py remove   # Remove a book by title
+python book_app.py find     # Find books by author name
+python book_app.py help     # Show available commands
 ```
 
 ## Running Tests
