@@ -1,29 +1,15 @@
 import sys
 from books import BookCollection
+from utils import print_books
 
 
 # Global collection instance
 collection = BookCollection()
 
 
-def show_books(books):
-    """Display books in a user-friendly format."""
-    if not books:
-        print("No books found.")
-        return
-
-    print("\nYour Book Collection:\n")
-
-    for index, book in enumerate(books, start=1):
-        status = "✓" if book.read else " "
-        print(f"{index}. [{status}] {book.title} by {book.author} ({book.year})")
-
-    print()
-
-
 def handle_list():
     books = collection.list_books()
-    show_books(books)
+    print_books(books)
 
 
 def handle_add():
@@ -56,7 +42,15 @@ def handle_find():
     author = input("Author name: ").strip()
     books = collection.find_by_author(author)
 
-    show_books(books)
+    print_books(books)
+
+
+def handle_unread():
+    books = collection.get_unread_books()
+    if not books:
+        print("\nNo unread books in your collection.\n")
+    else:
+        print_books(books)
 
 
 def show_help():
@@ -65,11 +59,22 @@ Book Collection Helper
 
 Commands:
   list     - Show all books
+  unread   - Show only unread books
   add      - Add a new book
   remove   - Remove a book by title
   find     - Find books by author
   help     - Show this help message
 """)
+
+
+COMMANDS = {
+    "list": handle_list,
+    "unread": handle_unread,
+    "add": handle_add,
+    "remove": handle_remove,
+    "find": handle_find,
+    "help": show_help,
+}
 
 
 def main():
@@ -78,17 +83,10 @@ def main():
         return
 
     command = sys.argv[1].lower()
+    handler = COMMANDS.get(command)
 
-    if command == "list":
-        handle_list()
-    elif command == "add":
-        handle_add()
-    elif command == "remove":
-        handle_remove()
-    elif command == "find":
-        handle_find()
-    elif command == "help":
-        show_help()
+    if handler:
+        handler()
     else:
         print("Unknown command.\n")
         show_help()
